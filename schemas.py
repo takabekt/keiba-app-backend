@@ -21,3 +21,9 @@ class ErrorDetail(BaseModel):
 class ErrorResponse(BaseModel):
     """共通エラーレスポンス (401等)"""
     detail: ErrorDetail
+
+class UserResponse(BaseModel):
+    """ユーザー情報レスポンス（動作確認用）後ほど削除する"""
+    id: int
+    code: str
+    name: str

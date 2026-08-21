@@ -8,8 +8,8 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from models import AppUser
-from schemas import LoginRequest, LoginSuccessResponse, ErrorResponse
-from auth import verify_password, create_access_token
+from schemas import LoginRequest, LoginSuccessResponse, ErrorResponse, UserResponse
+from auth import verify_password, create_access_token, get_current_user
 
 app = FastAPI(title="Keiba API")
 
@@ -40,7 +40,7 @@ def login(
     # PyJWTを利用したアクセストークン生成
     access_token = create_access_token(data={"sub": user.code, "user_id": user.id})
 
-    # API仕様書に沿って HttpOnly Cookie（セッションCookie）としてセット
+    # HttpOnly Cookie（セッションCookie）としてセット
     response.set_cookie(
         key="access_token",
         value=f"Bearer {access_token}",
@@ -51,3 +51,23 @@ def login(
     )
 
     return {"message": "ログインに成功しました。"}
+
+# JWT認証処理確認用APIのため、後ほど消す
+@app.get(
+    "/api/users/me",
+    response_model=UserResponse,
+    responses={
+        401: {"model": ErrorResponse, "description": "Unauthorized"}
+    },
+    tags=["認証"]
+)
+def get_me(current_user: AppUser = Depends(get_current_user)):
+    """
+    ログイン中のユーザー情報を取得するテスト用エンドポイント
+    Cookie認証が成功している場合のみアクセス可能
+    """
+    return {
+        "id": current_user.id,
+        "code": current_user.code,
+        "name": current_user.name
+    }

@@ -3,6 +3,8 @@ Keiba API - メインアプリケーションおよびルーティング
 FastAPIのインスタンス生成、各エンドポイントのルーティング、
 およびリクエスト/レスポンスの制御を行います。
 """
+import os
+
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
@@ -12,6 +14,9 @@ from schemas import LoginRequest, LoginSuccessResponse, ErrorResponse, UserRespo
 from auth import verify_password, create_access_token, get_current_user
 
 app = FastAPI(title="Keiba API")
+
+# 環境変数から環境種別（development / production）を取得（デフォルトは dev）
+IS_PRODUCTION = os.getenv("ENV", "development") == "production"
 
 @app.post(
     "/api/auth/login",
@@ -45,7 +50,7 @@ def login(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=False,  # ローカル開発環境(http)用。本番環境(https)ではTrueに設定
+        secure=IS_PRODUCTION,  # 本番環境のみ True になる
         samesite="lax",
         max_age=3600
     )

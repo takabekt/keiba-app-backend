@@ -1,7 +1,12 @@
+"""
+Keiba API - データベース接続・セッション管理
+SQLAlchemy を使用して PostgreSQL (Neon) データベースとの接続を確立し、
+リクエストごとの DB セッション管理 (get_db) を行います。
+"""
 import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # .env ファイルから環境変数を読み込む
@@ -21,8 +26,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # ORMモデル用のベースクラス
 Base = declarative_base()
 
-# DBセッションを取得する依存関数（API等で使用）
 def get_db():
+    """
+    DBセッションを取得・管理するジェネレータ関数 (FastAPIのDependency用)
+    リクエスト処理の開始時にセッションを開き、処理終了時に自動でクローズします。
+    """
     db = SessionLocal()
     try:
         yield db

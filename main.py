@@ -8,10 +8,10 @@ import os
 from fastapi import FastAPI, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models import AppUser
+from core.database import get_db
+from models.user import AppUser
 from schemas import LoginRequest, LoginSuccessResponse, ErrorResponse, UserResponse
-from auth import verify_password, create_access_token, get_current_user
+from core.auth import verify_password, create_access_token, get_current_user
 
 app = FastAPI(title="Keiba API")
 

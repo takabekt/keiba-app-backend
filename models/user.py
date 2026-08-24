@@ -4,7 +4,7 @@ SQLAlchemyを使用して、PostgreSQL(Neon)データベースの
 テーブル構造をPythonクラスとして定義します。
 """
 from sqlalchemy import Column, BigInteger, String, DateTime, func
-from database import Base
+from core.database import Base
 
 class AppUser(Base):
     """

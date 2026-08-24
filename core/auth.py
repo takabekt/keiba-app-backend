@@ -10,8 +10,8 @@ import jwt
 from dotenv import load_dotenv
 from fastapi import Request, HTTPException, status, Depends
 from sqlalchemy.orm import Session
-from database import get_db
-from models import AppUser
+from core.database import get_db
+from models.user import AppUser
 
 load_dotenv()
 

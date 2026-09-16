@@ -3,6 +3,8 @@
 ## 1. 認証関連
 * `POST /api/auth/login`
   * **役割:** ログイン処理（コードとパスワードの照合）
+* `GET /api/auth/me`
+  * **役割:** ログイン状態確認（Cookie内JWTの有効性確認）
 
 ## 2. 馬・次走情報関連
 * `GET /api/horses`

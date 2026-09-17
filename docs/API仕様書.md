@@ -46,14 +46,14 @@
 認証が必要な業務APIでは、それぞれ `Depends(get_current_user)` によりJWT認証を行います。
 
 * **Method:** `GET`
-* **Path:** `/api/users/me`
+* **Path:** `/api/auth/me`
 
 #### 用途
 
 ```text
 アプリ起動
 ↓
-GET /api/users/me
+GET /api/auth/me
 ↓
 Cookie内JWTを検証
 ↓

@@ -27,3 +27,7 @@ class UserResponse(BaseModel):
     id: int
     code: str
     name: str
+
+class AuthCheckResponse(BaseModel):
+    """認証確認レスポンス"""
+    authenticated: bool

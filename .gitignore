@@ -12,3 +12,6 @@ __pycache__/
 # IDE設定
 .vscode/
 .idea/
+
+# Cookieファイル
+cookies.txt

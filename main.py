@@ -6,14 +6,27 @@ FastAPIのインスタンス生成、各エンドポイントのルーティン�
 import os
 
 from fastapi import FastAPI, Depends, HTTPException, status, Response
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from core.database import get_db
 from models.user import AppUser
-from schemas import LoginRequest, LoginSuccessResponse, ErrorResponse, UserResponse
+from schemas import AuthCheckResponse, LoginRequest, LoginSuccessResponse, ErrorResponse
 from core.auth import verify_password, create_access_token, get_current_user
 
 app = FastAPI(title="Keiba API")
+
+# CORS設定
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://keiba-app-frontend-1u860nzpt-takabekts-projects.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
 
 # 環境変数から環境種別（development / production）を取得（デフォルトは dev）
 IS_PRODUCTION = os.getenv("ENV", "development") == "production"
@@ -57,22 +70,25 @@ def login(
 
     return {"message": "ログインに成功しました。"}
 
-# JWT認証処理確認用APIのため、後ほど消す
+# JWT認証処理確認用API
 @app.get(
-    "/api/users/me",
-    response_model=UserResponse,
+    "/api/auth/me",
+    response_model=AuthCheckResponse,
     responses={
-        401: {"model": ErrorResponse, "description": "Unauthorized"}
+        401: {
+            "model": ErrorResponse,
+            "description": "Unauthorized",
+        }
     },
-    tags=["認証"]
+    tags=["認証"],
+    dependencies=[Depends(get_current_user)],
 )
-def get_me(current_user: AppUser = Depends(get_current_user)):
+def get_me():
     """
-    ログイン中のユーザー情報を取得するテスト用エンドポイント
-    Cookie認証が成功している場合のみアクセス可能
+    Cookie内のJWTが有効か確認するAPI。
+    認証成功時は認証結果を返し、
+    認証失敗時は401を返す。
     """
     return {
-        "id": current_user.id,
-        "code": current_user.code,
-        "name": current_user.name
+        "authenticated": True
     }

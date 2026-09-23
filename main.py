@@ -63,8 +63,8 @@ def login(
         key="access_token",
         value=f"Bearer {access_token}",
         httponly=True,
-        secure=IS_PRODUCTION,  # 本番環境のみ True になる
-        samesite="lax",
+        secure=True if IS_PRODUCTION else False,    # 本番は True、ローカルは False
+        samesite="none" if IS_PRODUCTION else "lax", # 本番は "none"、ローカルは "lax"
         max_age=3600
     )
 

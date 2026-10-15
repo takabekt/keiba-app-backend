@@ -704,11 +704,49 @@ Cookie内JWTを検証
 }
 ```
 
-## 4. 競馬場・馬場状態関連
+## 4. マスタ・共通データ関連
 
-### 4.1 競馬場一覧取得処理
+### 4.1 騎手一覧取得処理（ドロップダウン用）
 
-競馬場検索・選択画面用。競馬場マスタ（`racetrack`）に登録されている全競馬場データを取得します。
+馬情報の次走予定入力や、レース回顧の登録・編集画面における「騎手選択ドロップダウン」用。騎手マスタ（`jockey`）に登録されている全騎手データを軽量な形式で取得します。
+
+* **Method:** `GET`
+* **Path:** `/api/jockeys`
+* **Content-Type:** `application/json`
+
+#### リクエストパラメータ
+なし（全件取得）
+
+#### リクエスト例
+`GET /api/jockeys`
+
+#### レスポンス例（成功時 : 200 OK）
+```json
+[
+  {
+    "id": 1,
+    "jockeyName": "ルメール"
+  },
+  {
+    "id": 2,
+    "jockeyName": "川田将雅"
+  },
+  {
+    "id": 5,
+    "jockeyName": "北村友一"
+  }
+]
+```
+#### レスポンス例（失敗時 : 500 Internal Server Error）
+```json
+{
+  "message": "騎手一覧の取得に失敗しました。"
+}
+```
+
+### 4.2 競馬場一覧取得処理
+
+レース回顧の登録・編集画面における「競馬場選択ドロップダウン」用。競馬場マスタ（`racetrack`）に登録されている全競馬場データを取得します。
 
 * **Method:** `GET`
 * **Path:** `/api/racetracks`
@@ -744,154 +782,5 @@ Cookie内JWTを検証
 ```json
 {
   "message": "競馬場一覧の取得に失敗しました。"
-}
-```
-
-### 4.2 競馬場詳細・馬場状態取得処理
-
-競馬場詳細（照会）画面用。指定された競馬場ID（`racetrack.id`）をもとに、競馬場の基本情報および紐づく馬場状態履歴（`track_condition`）の一覧データを取得します。
-
-* **Method:** `GET`
-* **Path:** `/api/racetracks/{id}/conditions`
-* **Content-Type:** `application/json`
-
-#### リクエストパラメータ（Path）
-
-| パラメータ名 | 型 | 必須 | 説明 |
-| :--- | :--- | :--- | :--- |
-| `id` | number | ○ | 競馬場ID (`racetrack.id`) |
-
-#### リクエスト例
-`GET /api/racetracks/1/conditions`
-
-#### レスポンス例（成功時 : 200 OK）
-```json
-{
-  "id": 1,
-  "name": "東京",
-  "turnType": 1,
-  "trackConditions": [
-    {
-      "id": 101,
-      "trackType": 0,
-      "date": "2026-05-31",
-      "conditionType": 0,
-      "cushionValue": 9.8,
-      "trackBias": "内・前有利",
-      "memo": "Cコース使用初日。絶好の馬場状態。"
-    },
-    {
-      "id": 102,
-      "trackType": 1,
-      "date": "2026-05-31",
-      "conditionType": 0,
-      "cushionValue": null,
-      "trackBias": "フラット",
-      "memo": "乾燥気味でやや時計がかかる。"
-    }
-  ]
-}
-```
-#### レスポンス例（失敗時 : 404 Not Found）
-```json
-{
-  "message": "指定された競馬場情報が存在しません。"
-}
-```
-
-### 4.3 馬場状態更新・登録処理
-
-馬場状態編集画面用。指定された競馬場ID（`racetrack.id`）に対し、馬場状態データ（`track_condition`）の更新または新規追加を行います。
-
-* **Method:** `PUT`
-* **Path:** `/api/racetracks/{id}/conditions`
-* **Content-Type:** `application/json`
-
-#### リクエストパラメータ（Path）
-
-| パラメータ名 | 型 | 必須 | 説明 |
-| :--- | :--- | :--- | :--- |
-| `id` | number | ○ | 競馬場ID (`racetrack.id`) |
-
-#### リクエストパラメータ（Body）
-
-| パラメータ名 | 型 | 必須 | 説明 |
-| :--- | :--- | :--- | :--- |
-| `trackType` | number | ○ | 馬場種別（`0`: 芝 / `1`: ダート） |
-| `date` | string | ○ | 日付（形式: `YYYY-MM-DD`） |
-| `conditionType` | number | ○ | 馬場状態区分（`0`: 良 / `1`: 稍重 / `2`: 重 / `3`: 不良） |
-| `cushionValue` | number | × | クッション値（例: `9.8`） |
-| `trackBias` | string | × | トラックバイアス（最大20文字、例: `"内・前有利"`） |
-| `memo` | string | × | メモ |
-
-#### リクエスト例
-`PUT /api/racetracks/1/conditions`
-
-```json
-{
-  "trackType": 0,
-  "date": "2026-08-09",
-  "conditionType": 0,
-  "cushionValue": 9.8,
-  "trackBias": "内・前有利",
-  "memo": "開幕週でインコースが良好。高速馬場。"
-}
-```
-#### レスポンス例（成功時 : 200 OK）
-```json
-{
-  "message": "馬場状態を更新しました。"
-}
-```
-#### レスポンス例（失敗時 : 404 Not Found）
-```json
-{
-  "message": "対象の競馬場が存在しません。"
-}
-```
-#### レスポンス例（失敗時 : 400 Bad Request）
-```json
-{
-  "message": "馬場状態の更新に失敗しました。入力内容を確認してください。"
-}
-```
-
-## 5. マスタ・共通データ関連
-
-### 5.1 騎手一覧取得処理（ドロップダウン用）
-
-馬情報の次走予定入力や、レース回顧の登録・編集画面における「騎手選択ドロップダウン」用。騎手マスタ（`jockey`）に登録されている全騎手データを軽量な形式で取得します。
-
-* **Method:** `GET`
-* **Path:** `/api/jockeys`
-* **Content-Type:** `application/json`
-
-#### リクエストパラメータ
-なし（全件取得）
-
-#### リクエスト例
-`GET /api/jockeys`
-
-#### レスポンス例（成功時 : 200 OK）
-```json
-[
-  {
-    "id": 1,
-    "jockeyName": "ルメール"
-  },
-  {
-    "id": 2,
-    "jockeyName": "川田将雅"
-  },
-  {
-    "id": 5,
-    "jockeyName": "北村友一"
-  }
-]
-```
-#### レスポンス例（失敗時 : 500 Internal Server Error）
-```json
-{
-  "message": "騎手一覧の取得に失敗しました。"
 }
 ```

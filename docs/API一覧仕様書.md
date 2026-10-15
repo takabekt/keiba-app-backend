@@ -30,14 +30,8 @@
 * `DELETE /api/race-reviews/{id}`
   * **役割:** レース回顧の単体削除
 
-## 4. 競馬場・馬場状態関連
-* **`GET /api/racetracks`**
-  * **役割:** 競馬場一覧取得（検索画面用）
-* **`GET /api/racetracks/{id}/conditions`**
-  * **役割:** 対象競馬場の馬場状態取得（照会画面用）
-* **`PUT /api/racetracks/{id}/conditions`**
-  * **役割:** 馬場状態の更新・登録（更新画面用）
-
-## 5. ドロップダウンリスト用
+## 4. ドロップダウンリスト用
 * **`GET /api/jockeys`**
   * **役割:** 騎手一覧取得
+* **`GET /api/racetracks`**
+  * **役割:** 競馬場一覧取得

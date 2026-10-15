@@ -99,21 +99,7 @@
 
 ---
 
-## 7. 競馬場状態テーブル (`track_condition`)
-| 論理名 | 物理名 | 型 | 制約 | 説明・補足 |
-| :--- | :--- | :--- | :--- | :--- |
-| **ID** | `id` | BIGINT GENERATED ALWAYS AS IDENTITY | PRIMARY KEY | 自動採番 |
-| **競馬場ID** | `racetrack_id` | BIGINT | NOT NULL, FOREIGN KEY (`racetrack.id`) | |
-| **馬場種別** | `track_type` | INT2 | NOT NULL | `0`: 芝 / `1`: ダート |
-| **日付** | `date` | DATE | NOT NULL | |
-| **馬場状態区分** | `condition_type` | INT2 | NOT NULL | `0`: 良 / `1`: 稍重 / `2`: 重 / `3`: 不良 |
-| **クッション値** | `cushion_value` | NUMERIC(3,1) | | |
-| **トラックバイアス** | `track_bias` | VARCHAR(20) | | |
-| **メモ** | `memo` | TEXT | | |
-| **登録日時** | `created_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | |
-| **更新日時** | `updated_at` | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP | |
-
-## 8. インデックス定義
+## 7. インデックス定義
 
 取得クエリの最適化および外部キー（JOIN）処理の高速化のため、以下のインデックスを作成する。
 
@@ -121,11 +107,10 @@
 | :--- | :--- | :--- | :--- |
 | `race_review` | `idx_race_review_horse_date` | `horse_id`, `date DESC` | 対象馬のレース回顧を日付の新しい順で取得するため |
 | `next_race` | `idx_next_race_horse` | `horse_id` | 対象馬の次走予定データを高速取得するため |
-| `track_condition` | `idx_track_condition_racetrack_date` | `racetrack_id`, `date` | 対象競馬場の指定日（今週）の馬場状態を高速取得するため |
 | `horse` | `idx_horse_name` | `name` | 馬名での絞り込み検索・50音順ソートの高速化のため |
 | `next_race` | `idx_next_race_race_name` | `race_name` | 次走レース名での絞り込み検索の高速化のため |
 
-## 9. ER図
+## 8. ER図
 
 ```mermaid
 erDiagram
@@ -180,19 +165,6 @@ erDiagram
         TIMESTAMP updated_at "更新日時"
     }
 
-    track_condition {
-        BIGINT id PK "ID"
-        BIGINT racetrack_id FK "競馬場ID"
-        INT2 track_type "馬場種別"
-        DATE date "日付"
-        INT2 condition_type "馬場状態区分"
-        NUMERIC cushion_value "クッション値"
-        VARCHAR track_bias "トラックバイアス"
-        TEXT memo "メモ"
-        TIMESTAMP created_at "登録日時"
-        TIMESTAMP updated_at "更新日時"
-    }
-
     race_review {
         BIGINT id PK "ID"
         BIGINT horse_id FK "馬ID"
@@ -228,4 +200,3 @@ erDiagram
     jockey ||--o{ next_race : "予定騎手として紐付け"
     jockey ||--o{ race_review : "騎乗実績として紐付け"
     racetrack ||--o{ race_review : "開催場所"
-    racetrack ||--o{ track_condition : "日付・種別ごとの馬場状態"

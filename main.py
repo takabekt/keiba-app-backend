@@ -13,8 +13,10 @@ from core.database import get_db
 from models.user import AppUser
 from schemas import AuthCheckResponse, LoginRequest, LoginSuccessResponse, ErrorResponse
 from core.auth import verify_password, create_access_token, get_current_user
+from routers.horse import router as horse_router
 
 app = FastAPI(title="Keiba API")
+app.include_router(horse_router)
 
 # CORS設定
 app.add_middleware(

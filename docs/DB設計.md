@@ -55,7 +55,7 @@
 | 論理名 | 物理名 | 型 | 制約 | 説明・補足 |
 | :--- | :--- | :--- | :--- | :--- |
 | **ID** | `id` | BIGINT GENERATED ALWAYS AS IDENTITY | PRIMARY KEY | 自動採番 |
-| **馬ID** | `horse_id` | BIGINT | NOT NULL, FOREIGN KEY (`horse.id`) | |
+| **馬ID** | `horse_id` | BIGINT | NOT NULL, UNIQUE, FOREIGN KEY (`horse.id`) | 1頭につき次走情報は1件のみ保持 |
 | **レース名** | `race_name` | VARCHAR(50) | | |
 | **枠順** | `bracket_number` | INT2 | | |
 | **馬番** | `horse_number` | INT2 | | |

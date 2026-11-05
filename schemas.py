@@ -31,3 +31,19 @@ class UserResponse(BaseModel):
 class AuthCheckResponse(BaseModel):
     """認証確認レスポンス"""
     authenticated: bool
+
+class HorseResponse(BaseModel):
+    """馬情報レスポンス"""
+    id: int
+    horse_name: str
+    gender: str
+    age: int
+    next_race_name: str | None = None
+
+class JockeyResponse(BaseModel):
+    """
+    騎手一覧レスポンス
+    """
+
+    id: int
+    jockey_name: str

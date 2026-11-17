@@ -38,6 +38,7 @@ async def validation_exception_handler(
     # 複数のエラーがある場合は、先頭のエラーを使用
     error = exc.errors()[0]
 
+    # エラー種別、エラー対象の項目名、エラー詳細を取得
     error_type = error.get("type")
     location = error.get("loc", [])
     context = error.get("ctx", {})

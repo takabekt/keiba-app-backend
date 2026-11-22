@@ -45,12 +45,15 @@ async def get_jockeys(
 
     result = []
 
-    # APIレスポンス生成
+    # 騎手一覧取得APIレスポンス生成
     for jockey in jockeys:
         result.append(
             JockeyResponse(
+                # 騎手ID
                 id=jockey.id,
-                jockey_name=jockey.jockey_name
+
+                # 騎手名
+                jockey_name=jockey.jockey_name,
             )
         )
 

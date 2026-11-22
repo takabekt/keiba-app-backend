@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 from core.auth import verify_password, create_access_token, get_current_user
 from core.exception_handler import (
+    http_exception_handler,
     unexpected_exception_handler,
     validation_exception_handler,
 )
@@ -36,17 +37,18 @@ app.add_exception_handler(
     unexpected_exception_handler,
 )
 
+# HTTPエラー共通ハンドラ登録
+app.add_exception_handler(
+    HTTPException,
+    http_exception_handler,
+)
+
 # APIルーター登録
-# 馬一覧取得API
+# 馬一覧取得API/馬詳細取得API
 app.include_router(horse_router)
 
 # 騎手一覧取得API
 app.include_router(jockey_router)
-
-# 馬詳細取得API
-
-
-
 
 # CORS設定
 app.add_middleware(

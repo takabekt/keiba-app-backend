@@ -9,7 +9,11 @@ FastAPIで発生したバリデーションエラーおよび
 
 import logging
 
-from fastapi import Request, status
+from fastapi import (
+    HTTPException,
+    Request,
+    status,
+)
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
@@ -111,4 +115,45 @@ async def unexpected_exception_handler(
         content={
             "message": "システムエラーが発生しました。",
         },
+    )
+
+async def http_exception_handler(
+    request: Request,
+    exc: HTTPException,
+) -> JSONResponse:
+    """
+    HTTPエラー共通処理
+
+    404などの想定内HTTPエラーを処理し、
+    発生したステータスコードとメッセージを返却する。
+    """
+
+    # detailが辞書の場合
+    if isinstance(exc.detail, dict):
+        content = exc.detail
+        message = str(
+            exc.detail.get(
+                "message",
+                "HTTPエラーが発生しました。",
+            )
+        )
+    else:
+        # detailが文字列などの場合
+        message = str(exc.detail)
+        content = {
+            "message": message,
+        }
+
+    # HTTPエラーの内容をWARNINGログとして出力
+    logger.warning(
+        "%s path=%s status_code=%s",
+        message,
+        request.url.path,
+        exc.status_code,
+    )
+
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=content,
+        headers=exc.headers,
     )

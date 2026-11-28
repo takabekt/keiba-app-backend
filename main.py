@@ -50,18 +50,6 @@ app.include_router(horse_router)
 # 騎手一覧取得API
 app.include_router(jockey_router)
 
-# CORS設定
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://keiba-app-frontend.vercel.app",
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type"],
-)
-
 # 環境変数から環境種別（development / production）を取得（デフォルトは dev）
 IS_PRODUCTION = os.getenv("ENV", "development") == "production"
 
@@ -126,3 +114,23 @@ def get_me():
     return {
         "authenticated": True
     }
+
+# CORS設定
+# 想定外エラーの500レスポンスにもCORSヘッダーを付与するため、
+# FastAPIアプリケーション全体をCORSMiddlewareで包む。
+app = CORSMiddleware(
+    app=app,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://keiba-app-frontend.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS",
+    ],
+    allow_headers=["Content-Type"],
+)
